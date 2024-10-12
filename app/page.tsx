@@ -210,7 +210,6 @@ const RegistrationForm = () => {
                       {...field}
                       onChange={(e) => {
                         if (Number(e.target.value) >= 0) {
-                          console.log(e.target.value);
                           setTicketCount(Number(e.target.value));
                           field.onChange(Number(e.target.value));
                         }

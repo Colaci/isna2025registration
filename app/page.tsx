@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { fileURLToPath } from "url";
 
 const formSchema = z.object({
   prefix: z.string(),
@@ -42,6 +40,11 @@ const RegistrationForm = () => {
   const [isSpecificRequirements, setIsSpecificRequirements] = useState(false);
   const [feeOption, setFeeOption] = useState("No fee option selected yet");
   const [totalPaymentDue, setTotalPaymentDue] = useState(0);
+  type FieldType = {
+    name: string;
+    value: string;
+    onChange: (value: string) => void;
+  };
   // prefix list for contact information
   const prefixList = ["Dr.", "Mr.", "Ms.", "Prof."];
   // input list for contact information
@@ -78,7 +81,7 @@ const RegistrationForm = () => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
-  function handleSingleCheckboxChange(field: any, item: string) {
+  function handleSingleCheckboxChange(field: FieldType, item: string) {
     // 处理特殊的选择逻辑
     return {
       checked: field.value === item,
@@ -93,7 +96,7 @@ const RegistrationForm = () => {
       },
     };
   }
-  function makeCheckboxList(field: any, list: string[], flexDirection: string) {
+  function makeCheckboxList(field: FieldType, list: string[], flexDirection: string) {
     return (
       <div className={flexDirection === "row" ? "flex items-center" : ""}>
         {list.map((item, index) => {
@@ -261,3 +264,4 @@ const RegistrationForm = () => {
 };
 
 export default RegistrationForm;
+

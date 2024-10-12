@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any*/
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,55 +11,60 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
-  prefix: z.string(),
-  firstName: z.string(),
+  prefix: z.string().min(1),
+  firstName: z.string().min(1),
   middleName: z.string().optional(),
-  lastName: z.string(),
-  institution: z.string(),
-  address: z.string(),
-  city: z.string(),
-  state: z.string(),
-  country: z.string(),
-  postcode: z.string(),
+  lastName: z.string().min(1),
+  institution: z.string().min(1),
+  address: z.string().min(1),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  country: z.string().min(1),
+  postcode: z.string().min(1),
   email: z.string().email(),
   abstractId: z.string().optional(),
-  feeOption: z.string(),
-  shortCourseOnNonlinearAcoustics: z.string(),
-  shortCourseOnComputationalModelling: z.string(),
-  tickets: z.number(),
-  dietaryRestrictions: z.string(),
+  feeOption: z.string().min(1),
+  shortCourseOnNonlinearAcoustics: z.string().min(1),
+  shortCourseOnComputationalModelling: z.string().min(1),
+  tickets: z.number().optional(),
+  dietaryRestrictions: z.string().min(1),
   dietarySpecificRequirements: z.string().optional(),
 });
 const RegistrationForm = () => {
   const [isSpecificRequirements, setIsSpecificRequirements] = useState(false);
   const [feeOption, setFeeOption] = useState("No fee option selected yet");
   const [totalPaymentDue, setTotalPaymentDue] = useState(0);
+  const [ticketCount, setTicketCount] = useState(0);
   type FieldType = {
     name: string;
     value: string;
     onChange: (value: string) => void;
   };
+  useEffect(() => {
+    const feeAmount = Number(feeOption.substring(1, 4)) || 0;
+    const ticketAmount = ticketCount * 80;
+    setTotalPaymentDue(feeAmount + ticketAmount);
+  }, [feeOption, ticketCount]);
   // prefix list for contact information
   const prefixList = ["Dr.", "Mr.", "Ms.", "Prof."];
   // input list for contact information
   const inputList = [
-    { label: "First Name", name: "firstName", placeholder: "Please enter your first name",required:true},
-    { label: "Middle Name", name: "middleName", placeholder: "Please enter your middle name", required:false },
-    { label: "Last Name", name: "lastName", placeholder: "Please enter your last name",required:true },
-    { label: "Institution", name: "institution", placeholder: "Please enter your institution",required:true },
-    { label: "Address", name: "address", placeholder: "Please enter your address",required:true },
-    { label: "City", name: "city", placeholder: "Please enter your city",required:true },
-    { label: "State", name: "state", placeholder: "Please enter your state",required:true },
-    { label: "Country", name: "country", placeholder: "Please enter your country",required:true },
-    { label: "Postcode", name: "postcode", placeholder: "Please enter your postcode",required:true },
-    { label: "Email", name: "email", placeholder: "Please enter your email",required:true },
-    { label: "Abstract ID(If Presenting)", name: "abstractId", placeholder: "Please enter your abstract ID",required:false },
+    { label: "First Name", name: "firstName", placeholder: "Please enter your first name", required: true },
+    { label: "Middle Name", name: "middleName", placeholder: "Please enter your middle name", required: false },
+    { label: "Last Name", name: "lastName", placeholder: "Please enter your last name", required: true },
+    { label: "Institution", name: "institution", placeholder: "Please enter your institution", required: true },
+    { label: "Address", name: "address", placeholder: "Please enter your address", required: true },
+    { label: "City", name: "city", placeholder: "Please enter your city", required: true },
+    { label: "State", name: "state", placeholder: "Please enter your state", required: true },
+    { label: "Country", name: "country", placeholder: "Please enter your country", required: true },
+    { label: "Postcode", name: "postcode", placeholder: "Please enter your postcode", required: true },
+    { label: "Email", name: "email", placeholder: "Please enter your email", required: true },
+    { label: "Abstract ID(If Presenting)", name: "abstractId", placeholder: "Please enter your abstract ID", required: false },
   ];
   // fee option list
   const feeOptionList = [
@@ -75,7 +80,6 @@ const RegistrationForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -86,8 +90,8 @@ const RegistrationForm = () => {
     return {
       checked: field.value === item,
       onCheckedChange: (checked: boolean) => {
-        if(field.name === "feeOption"){
-          setFeeOption(checked?item:"No fee option selected yet");
+        if (field.name === "feeOption") {
+          setFeeOption(checked ? item : "No fee option selected yet");
         }
         if (field.name === "dietaryRestrictions") {
           setIsSpecificRequirements(checked && item === "other");
@@ -108,9 +112,8 @@ const RegistrationForm = () => {
               }
             >
               <FormControl
-                className={`${
-                  index === 0 || flexDirection !== "row" ? "ml-0" : "ml-5"
-                }`}
+                className={`${index === 0 || flexDirection !== "row" ? "ml-0" : "ml-5"
+                  }`}
               >
                 <Checkbox {...handleSingleCheckboxChange(field, item)} />
               </FormControl>
@@ -146,7 +149,6 @@ const RegistrationForm = () => {
                   <FormControl>
                     <Input placeholder={item.placeholder} {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -195,7 +197,7 @@ const RegistrationForm = () => {
             name="tickets"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="required font-semibold">
+                <FormLabel className="font-semibold">
                   The banquet will take place in the Jingling Hotel. Start time
                   is 19:00
                 </FormLabel>
@@ -208,11 +210,12 @@ const RegistrationForm = () => {
                       {...field}
                       onChange={(e) => {
                         if (Number(e.target.value) >= 0) {
-                          setTotalPaymentDue(Number(e.target.value));
+                          console.log(e.target.value);
+                          setTicketCount(Number(e.target.value));
                           field.onChange(Number(e.target.value));
                         }
                       }}
-                      value={totalPaymentDue.toString()}
+                      value={field?.value || '0'}
                     />{" "}
                     ticket(s) to the Banquet at $80 each.
                   </div>
@@ -252,10 +255,10 @@ const RegistrationForm = () => {
           </h1>
           <div>ISNA Registration Fee: {feeOption}</div>
           <div>
-            Total Payment Due: {totalPaymentDue * 80 + Number(feeOption.substring(1, 4)) || 0}
+            Total Payment Due: {totalPaymentDue}
           </div>
           <div className="w-full flex justify-center">
-          <Button type="submit">Submit</Button>
+            <Button type="submit">Submit</Button>
           </div>
         </form>
       </Form>

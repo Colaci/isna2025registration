@@ -1,101 +1,263 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useEffect, useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { fileURLToPath } from "url";
+
+const formSchema = z.object({
+  prefix: z.string(),
+  firstName: z.string(),
+  middleName: z.string().optional(),
+  lastName: z.string(),
+  institution: z.string(),
+  address: z.string(),
+  city: z.string(),
+  state: z.string(),
+  country: z.string(),
+  postcode: z.string(),
+  email: z.string().email(),
+  abstractId: z.string().optional(),
+  feeOption: z.string(),
+  shortCourseOnNonlinearAcoustics: z.string(),
+  shortCourseOnComputationalModelling: z.string(),
+  tickets: z.number(),
+  dietaryRestrictions: z.string(),
+  dietarySpecificRequirements: z.string().optional(),
+});
+const RegistrationForm = () => {
+  const [isSpecificRequirements, setIsSpecificRequirements] = useState(false);
+  const [feeOption, setFeeOption] = useState("No fee option selected yet");
+  const [totalPaymentDue, setTotalPaymentDue] = useState(0);
+  // prefix list for contact information
+  const prefixList = ["Dr.", "Mr.", "Ms.", "Prof."];
+  // input list for contact information
+  const inputList = [
+    { label: "First Name", name: "firstName", placeholder: "Please enter your first name",required:true},
+    { label: "Middle Name", name: "middleName", placeholder: "Please enter your middle name", required:false },
+    { label: "Last Name", name: "lastName", placeholder: "Please enter your last name",required:true },
+    { label: "Institution", name: "institution", placeholder: "Please enter your institution",required:true },
+    { label: "Address", name: "address", placeholder: "Please enter your address",required:true },
+    { label: "City", name: "city", placeholder: "Please enter your city",required:true },
+    { label: "State", name: "state", placeholder: "Please enter your state",required:true },
+    { label: "Country", name: "country", placeholder: "Please enter your country",required:true },
+    { label: "Postcode", name: "postcode", placeholder: "Please enter your postcode",required:true },
+    { label: "Email", name: "email", placeholder: "Please enter your email",required:true },
+    { label: "Abstract ID(If Presenting)", name: "abstractId", placeholder: "Please enter your abstract ID",required:false },
+  ];
+  // fee option list
+  const feeOptionList = [
+    "$450.00 Full Program (Early registration)",
+    "$550.00 Full Program (On site registration)",
+    "$200.00 Full Program (Student early registration)",
+    "$250.00 Full Program (Student registration)",
+    "$150.00 one day registration (Monday 30th June)",
+    "$150.00 one day registration (Tuesday 1st July)",
+    "$150.00 one day registration (Wednesday 2nd July)",
+    "$150.00 one day registration (Thursday 3rd July)",
+  ];
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+    },
+  });
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+  }
+  function handleSingleCheckboxChange(field: any, item: string) {
+    // 处理特殊的选择逻辑
+    return {
+      checked: field.value === item,
+      onCheckedChange: (checked: boolean) => {
+        if(field.name === "feeOption"){
+          setFeeOption(checked?item:"No fee option selected yet");
+        }
+        if (field.name === "dietaryRestrictions") {
+          setIsSpecificRequirements(checked && item === "other");
+        }
+        return checked ? field.onChange(item) : field.onChange("");
+      },
+    };
+  }
+  function makeCheckboxList(field: any, list: string[], flexDirection: string) {
+    return (
+      <div className={flexDirection === "row" ? "flex items-center" : ""}>
+        {list.map((item, index) => {
+          return (
+            <div
+              key={item}
+              className={
+                (flexDirection !== "row" ? "mt-2" : "") + " flex items-center"
+              }
+            >
+              <FormControl
+                className={`${
+                  index === 0 || flexDirection !== "row" ? "ml-0" : "ml-5"
+                }`}
+              >
+                <Checkbox {...handleSingleCheckboxChange(field, item)} />
+              </FormControl>
+              <FormLabel className={"ml-2"}>{item}</FormLabel>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className="w-[60vw] mx-auto mt-10">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <h1 className="text-2xl font-bold">Contact information</h1>
+          <FormField
+            control={form.control}
+            name="prefix"
+            render={({ field }) => (
+              <FormItem>{makeCheckboxList(field, prefixList, "row")}</FormItem>
+            )}
+          />
+          {inputList.map((item) => (
+            <FormField
+              key={item.name}
+              control={form.control}
+              name={item.name as any}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={item.required ? "required font-semibold" : "font-semibold"}>
+                    {item.label}
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder={item.placeholder} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+          ))}
+          <h1 className="text-2xl font-bold">Registration Fee Options</h1>
+          <FormField
+            control={form.control}
+            name="feeOption"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="required font-semibold">
+                  Select your ISNA 2025 Symposium registration
+                </FormLabel>
+                {makeCheckboxList(field, feeOptionList, "col")}
+              </FormItem>
+            )}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <FormField
+            control={form.control}
+            name="shortCourseOnNonlinearAcoustics"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="required font-semibold">
+                  I plan to attend the Short Course on Nonlinear Acoustics on
+                  Monday 30 June (morning)
+                </FormLabel>
+                {makeCheckboxList(field, ["Yes", "No"], "row")}
+              </FormItem>
+            )}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <FormField
+            control={form.control}
+            name="shortCourseOnComputationalModelling"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="required font-semibold">
+                  I plan to attend the Short Course on Computational Modelling
+                  on Monday 4 July
+                </FormLabel>
+                {makeCheckboxList(field, ["Yes", "No"], "row")}
+              </FormItem>
+            )}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <FormField
+            control={form.control}
+            name="tickets"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="required font-semibold">
+                  The banquet will take place in the Jingling Hotel. Start time
+                  is 19:00
+                </FormLabel>
+                <FormControl>
+                  <div className="flex items-center">
+                    I am purchasing{" "}
+                    <Input
+                      className="w-[60px] ml-2 mr-2"
+                      type="number"
+                      {...field}
+                      onChange={(e) => {
+                        if (Number(e.target.value) >= 0) {
+                          setTotalPaymentDue(Number(e.target.value));
+                          field.onChange(Number(e.target.value));
+                        }
+                      }}
+                      value={totalPaymentDue.toString()}
+                    />{" "}
+                    ticket(s) to the Banquet at $80 each.
+                  </div>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dietaryRestrictions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="required font-semibold">
+                  Dietary Restrictions
+                </FormLabel>
+                {makeCheckboxList(
+                  field,
+                  ["None", "Vegetarian", "other"],
+                  "col"
+                )}
+              </FormItem>
+            )}
+          />
+          {isSpecificRequirements && (
+            <FormField
+              control={form.control}
+              name="dietarySpecificRequirements"
+              render={({ field }) => (
+                <FormItem>
+                  <Input placeholder="please specify" {...field} />
+                </FormItem>
+              )}
+            />
+          )}
+          <h1 className="text-2xl font-bold">
+            Below is your fee summary and total payment due
+          </h1>
+          <div>ISNA Registration Fee: {feeOption}</div>
+          <div>
+            Total Payment Due: {totalPaymentDue * 80 + Number(feeOption.substring(1, 4)) || 0}
+          </div>
+          <div className="w-full flex justify-center">
+          <Button type="submit">Submit</Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
-}
+};
+
+export default RegistrationForm;

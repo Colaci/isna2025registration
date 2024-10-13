@@ -128,7 +128,7 @@ const RegistrationForm = () => {
     <div className="w-[60vw] mx-auto mt-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <h1 className="text-2xl font-bold">Contact information</h1>
+          <h1 className="text-2xl font-bold border-b-2 border-black pb-2">Contact information</h1>
           <FormField
             control={form.control}
             name="prefix"
@@ -143,7 +143,7 @@ const RegistrationForm = () => {
               name={item.name as any}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={item.required ? "required font-semibold" : "font-semibold"}>
+                  <FormLabel className={item.required ? "required font-semibold text-lg" : "font-semibold text-lg"}>
                     {item.label}
                   </FormLabel>
                   <FormControl>
@@ -153,13 +153,13 @@ const RegistrationForm = () => {
               )}
             />
           ))}
-          <h1 className="text-2xl font-bold">Registration Fee Options</h1>
+          <h1 className="text-2xl font-bold border-b-2 border-black pb-2" style={{marginTop: "2.5rem"}}>Registration Fee Options</h1>
           <FormField
             control={form.control}
             name="feeOption"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="required font-semibold">
+                <FormLabel className="required font-semibold text-lg">
                   Select your ISNA 2025 Symposium registration
                 </FormLabel>
                 {makeCheckboxList(field, feeOptionList, "col")}
@@ -171,7 +171,7 @@ const RegistrationForm = () => {
             name="shortCourseOnNonlinearAcoustics"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="required font-semibold">
+                <FormLabel className="required font-semibold text-lg">
                   I plan to attend the Short Course on Nonlinear Acoustics on
                   Monday 30 June (morning)
                 </FormLabel>
@@ -184,7 +184,7 @@ const RegistrationForm = () => {
             name="shortCourseOnComputationalModelling"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="required font-semibold">
+                <FormLabel className="required font-semibold text-lg">
                   I plan to attend the Short Course on Computational Modelling
                   on Monday 4 July
                 </FormLabel>
@@ -197,7 +197,7 @@ const RegistrationForm = () => {
             name="tickets"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold">
+                <FormLabel className="font-semibold text-lg">
                   The banquet will take place in the Jingling Hotel. Start time
                   is 19:00
                 </FormLabel>
@@ -227,7 +227,7 @@ const RegistrationForm = () => {
             name="dietaryRestrictions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="required font-semibold">
+                <FormLabel className="required font-semibold text-lg">
                   Dietary Restrictions
                 </FormLabel>
                 {makeCheckboxList(
@@ -249,7 +249,7 @@ const RegistrationForm = () => {
               )}
             />
           )}
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-bold border-b-2 border-black pb-2" style={{marginTop: "2.5rem"}}>
             Below is your fee summary and total payment due
           </h1>
           <div>ISNA Registration Fee: {feeOption}</div>
